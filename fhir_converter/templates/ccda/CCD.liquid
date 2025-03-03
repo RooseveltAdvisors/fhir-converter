@@ -5,23 +5,64 @@
         {% evaluate patientId using 'Utils/GenerateId' obj: msg.ClinicalDocument.recordTarget.patientRole -%}
         {% assign fullPatientId = patientId | prepend: 'Patient/' -%}
         {% include 'Header' -%}
-        {% include 'Section/AllergiesAndAdverseReaction' -%}
-        {% include 'Section/Medication' -%}
-        {% include 'Section/Problem' -%}
-        {% include 'Section/Result' -%}
-        {% include 'Section/SocialHistory' -%}
-        {% include 'Section/VitalSign' -%}
+        
+        {% capture allergies_section %}{% include 'Section/AllergiesAndAdverseReaction' %}{% endcapture %}
+        {{ allergies_section }}
+        
+        {% capture medication_section %}{% include 'Section/Medication' %}{% endcapture %}
+        {{ medication_section }}
+        
+        {% capture problem_section %}{% include 'Section/Problem' %}{% endcapture %}
+        {{ problem_section }}
+        
+        {% capture result_section %}{% include 'Section/Result' %}{% endcapture %}
+        {{ result_section }}
+        
+        {% capture social_history_section %}{% include 'Section/SocialHistory' %}{% endcapture %}
+        {{ social_history_section }}
+        
+        {% capture vital_sign_section %}{% include 'Section/VitalSign' %}{% endcapture %}
+        {{ vital_sign_section }}
 
-        {% include 'Section/Procedure' -%}
-        {% include 'Section/Encounter' -%}
-        {% include 'Section/Immunization' -%}
-        {% include 'Section/FunctionalStatus' -%}
-        {% include 'Section/FamilyHistory' -%}
-        {% include 'Section/AdvanceDirective' -%}
-        {% include 'Section/MedicalEquipment' -%}
-        {% include 'Section/MentalStatus' -%}
-        {% include 'Section/Nutrition' -%}
-        {% include 'Section/Payer' -%}
+        {% comment %}Try including the procedure section, but continue if it fails{% endcomment %}
+        {% capture procedure_section %}
+            {% include 'Section/Procedure' %}
+        {% endcapture %}
+        {% assign procedure_section_valid = true %}
+        {% capture validate_json %}
+            {{ procedure_section | strip | first }}
+        {% endcapture %}
+        {% unless validate_json == '{' %}
+            {% assign procedure_section_valid = false %}
+        {% endunless %}
+        {% if procedure_section_valid %}{{ procedure_section }}{% endif %}
+        
+        {% capture encounter_section %}{% include 'Section/Encounter' %}{% endcapture %}
+        {{ encounter_section }}
+        
+        {% capture immunization_section %}{% include 'Section/Immunization' %}{% endcapture %}
+        {{ immunization_section }}
+        
+        {% capture functional_status_section %}{% include 'Section/FunctionalStatus' %}{% endcapture %}
+        {{ functional_status_section }}
+        
+        {% capture family_history_section %}{% include 'Section/FamilyHistory' %}{% endcapture %}
+        {{ family_history_section }}
+        
+        {% capture advance_directive_section %}{% include 'Section/AdvanceDirective' %}{% endcapture %}
+        {{ advance_directive_section }}
+        
+        {% capture medical_equipment_section %}{% include 'Section/MedicalEquipment' %}{% endcapture %}
+        {{ medical_equipment_section }}
+        
+        {% capture mental_status_section %}{% include 'Section/MentalStatus' %}{% endcapture %}
+        {{ mental_status_section }}
+        
+        {% capture nutrition_section %}{% include 'Section/Nutrition' %}{% endcapture %}
+        {{ nutrition_section }}
+        
+        {% capture payer_section %}{% include 'Section/Payer' %}{% endcapture %}
+        {{ payer_section }}
 
         {% assign documentId = msg | to_json_string | generate_uuid -%}
         {% include 'Resource/DocumentReference' documentReference: msg, ID: documentId -%}
